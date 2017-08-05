@@ -113,21 +113,6 @@ def gen_nonce():  # generates a nonce, used for authentication.
     return str(int(time.time() * 1000000))
 
 
-def payload_packer(payload):  # packs and signs the payload of the request.
-
-    j = json.dumps(payload)
-    data = base64.standard_b64encode(j)
-
-    h = hmac.new(API_SECRET, data, hashlib.sha384)
-    signature = h.hexdigest()
-
-    return {
-        "X-BFX-APIKEY": API_KEY,
-        "X-BFX-SIGNATURE": signature,
-        "X-BFX-PAYLOAD": data
-    }
-
-
 def place_order(amount, price, side, ord_type, symbol='btcusd',
                 exchange='bitfinex'):  # submit a new order.
 
@@ -144,7 +129,7 @@ def place_order(amount, price, side, ord_type, symbol='btcusd',
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/order/new", headers=signed_payload, verify=True)
     rep = r.json()
 
@@ -166,7 +151,7 @@ def delete_order(order_id):  # cancel an order.
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/order/cancel", headers=signed_payload,
                       verify=True)
     rep = r.json()
@@ -188,7 +173,7 @@ def delete_all_order():  # cancel an order.
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/order/cancel/all", headers=signed_payload,
                       verify=True)
     rep = r.json()
@@ -207,7 +192,7 @@ def status_order(order_id):
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/order/status", headers=signed_payload,
                       verify=True)
     rep = r.json()
@@ -229,7 +214,7 @@ def active_orders():  # view your active orders.
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/orders", headers=signed_payload, verify=True)
     rep = r.json()
 
@@ -245,7 +230,7 @@ def active_positions():  # view your active positions.
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/positions", headers=signed_payload, verify=True)
     rep = r.json()
 
@@ -262,7 +247,7 @@ def claim_position(position_id):  # Claim a position.
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/position/claim", headers=signed_payload,
                       verify=True)
     rep = r.json()
@@ -280,7 +265,7 @@ def close_position(position_id):  # Claim a position.
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/position/close", headers=signed_payload,
                       verify=True)
     rep = r.json()
@@ -299,7 +284,7 @@ def past_trades(timestamp=0, symbol='btcusd'):  # view your past trades
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/mytrades", headers=signed_payload, verify=True)
     rep = r.json()
 
@@ -319,7 +304,7 @@ def place_offer(currency, amount, rate, period, direction):
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/offer/new", headers=signed_payload, verify=True)
     rep = r.json()
 
@@ -335,7 +320,7 @@ def cancel_offer(offer_id):
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/offer/cancel", headers=signed_payload,
                       verify=True)
     rep = r.json()
@@ -352,7 +337,7 @@ def status_offer(offer_id):
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/offer/status", headers=signed_payload,
                       verify=True)
     rep = r.json()
@@ -368,7 +353,7 @@ def active_offers():
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/offers", headers=signed_payload, verify=True)
     rep = r.json()
 
@@ -384,7 +369,7 @@ def balances():  # see your balances.
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/balances", headers=signed_payload, verify=True)
     rep = r.json()
 
@@ -403,8 +388,23 @@ def withdraw(withdraw_type, walletselected, amount, address):
 
     }
 
-    signed_payload = payload_packer(payload)
+    signed_payload = _payload_packer(payload)
     r = requests.post(URL + "/withdraw", headers=signed_payload, verify=True)
     rep = r.json()
 
     return rep
+
+
+def _payload_packer(payload):  # packs and signs the payload of the request.
+
+    j = json.dumps(payload)
+    data = base64.standard_b64encode(j)
+
+    h = hmac.new(API_SECRET, data, hashlib.sha384)
+    signature = h.hexdigest()
+
+    return {
+        "X-BFX-APIKEY": API_KEY,
+        "X-BFX-SIGNATURE": signature,
+        "X-BFX-PAYLOAD": data
+    }
