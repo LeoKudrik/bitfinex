@@ -1,2 +1,36 @@
-build
-keys.txt
+*.swp
+*__local.py
+*.log
+.idea/
+.idea */
+tmp/
+log/
+test/.cache/
+nohup.out
+.cache/
+*.sublime-*
+
+*leok-desktop*
+*leok-fnc*
+
+*.py[cod]
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+#dist
+#build
+#eggs
+#parts
+#bin
+#var
+#sdist
+#develop-eggs
+.installed.cfg
+#lib
+#lib64
+__pycache__
+builds/
