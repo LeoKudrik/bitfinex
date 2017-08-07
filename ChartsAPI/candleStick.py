@@ -23,28 +23,28 @@ URL = "http://api.bitcoincharts.com/v1/trades.csv?symbol=bitfinexUSD&start="
 def trades(timeSince): # gets the innermost bid and asks and information on the most recent trade.
   adjustedTime = int(time.time()) - timeSince
   response = requests.get(URL + str(adjustedTime))
-  print "\nLooking back until ",adjustedTime
+  print ("\nLooking back until ",adjustedTime)
   splitResponse = response.text.splitlines()
   prices = []
   timestamps = []
-  amounts = [] 
+  amounts = []
 
   lowp = []
   highp = []
   openp = []
   closep = []
-   
+
   #Only keep one of each 30 lines
-  #splitResponse = splitResponse[::30]  
+  #splitResponse = splitResponse[::30]
 
 #Generate arrays for timestamp, price, and price
   for i,line in enumerate(splitResponse):
-    splitline = splitResponse[i].split(',') 
-    timestamp = splitline[0] 
+    splitline = splitResponse[i].split(',')
+    timestamp = splitline[0]
     price = round(float(splitline[1]),2)
-    amount = splitline[2] 
+    amount = splitline[2]
     times = []
-    vols = [] 
+    vols = []
     timestamps.insert(0, float(timestamp))
     prices.insert(0,float(price))
     amounts.insert(0, float(amount))
