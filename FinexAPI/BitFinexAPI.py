@@ -3,6 +3,8 @@
 # Edited by Dawson Botsford
 # report ANY bug @ https://github.com/dawsonbotsford/bitfinex/issues
 
+# Python 3.x adapted (@LeoKudrik)
+
 import requests
 import json
 import base64
@@ -15,7 +17,7 @@ __all__ = ['ticker', 'today', 'orderbook', 'lendbook', 'stats', 'trades',
            'delete_all_order', 'status_order', 'active_orders',
            'active_positions', 'place_offer', 'cancel_offer', 'status_offer',
            'active_offers', 'past_trades', 'balances', 'claim_position',
-           'close_position', 'withdraw']
+           'close_position', 'withdraw', 'account_fees']
 
 URL = "https://api.bitfinex.com/v1"
 
@@ -25,7 +27,7 @@ API_SECRET = ''
 
 def set_auth_data(api_key, api_secret):
     global API_KEY, API_SECRET
-    API_KEY, API_SECRET = api_key, api_secret
+    API_KEY, API_SECRET = api_key, bytes(api_secret, 'utf-8')
 
 
 def ticker(symbol='btcusd'):
@@ -107,6 +109,13 @@ def symbols():  # get a list of valid symbol IDs.
     return rep
 
 
+def symbols_details():
+    r = requests.get(URL + "/symbols_details", verify=True)
+    rep = r.json()
+
+    return rep
+
+
 # authenticated
 
 def gen_nonce():  # generates a nonce, used for authentication.
@@ -115,9 +124,7 @@ def gen_nonce():  # generates a nonce, used for authentication.
 
 def place_order(amount, price, side, ord_type, symbol='btcusd',
                 exchange='bitfinex'):  # submit a new order.
-
     payload = {
-
         "request": "/v1/order/new",
         "nonce": gen_nonce(),
         "symbol": symbol,
@@ -126,7 +133,6 @@ def place_order(amount, price, side, ord_type, symbol='btcusd',
         "exchange": exchange,
         "side": side,
         "type": ord_type
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -142,13 +148,10 @@ def place_order(amount, price, side, ord_type, symbol='btcusd',
 
 
 def delete_order(order_id):  # cancel an order.
-
     payload = {
-
         "request": "/v1/order/cancel",
         "nonce": gen_nonce(),
         "order_id": order_id
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -165,12 +168,9 @@ def delete_order(order_id):  # cancel an order.
 
 
 def delete_all_order():  # cancel an order.
-
     payload = {
-
         "request": "/v1/order/cancel/all",
         "nonce": gen_nonce(),
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -183,13 +183,10 @@ def delete_all_order():  # cancel an order.
 def status_order(order_id):
     # get the status of an order. Is it active? Was it cancelled?
     # To what extent has it been executed? etc.
-
     payload = {
-
         "request": "/v1/order/status",
         "nonce": gen_nonce(),
         "order_id": order_id
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -206,12 +203,9 @@ def status_order(order_id):
 
 
 def active_orders():  # view your active orders.
-
     payload = {
-
         "request": "/v1/orders",
         "nonce": gen_nonce()
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -222,12 +216,9 @@ def active_orders():  # view your active orders.
 
 
 def active_positions():  # view your active positions.
-
     payload = {
-
         "request": "/v1/positions",
         "nonce": gen_nonce()
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -238,13 +229,10 @@ def active_positions():  # view your active positions.
 
 
 def claim_position(position_id):  # Claim a position.
-
     payload = {
-
         "request": "/v1/position/claim",
         "nonce": gen_nonce(),
         "position_id": position_id
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -256,13 +244,10 @@ def claim_position(position_id):  # Claim a position.
 
 
 def close_position(position_id):  # Claim a position.
-
     payload = {
-
         "request": "/v1/position/close",
         "nonce": gen_nonce(),
         "position_id": position_id
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -274,14 +259,11 @@ def close_position(position_id):  # Claim a position.
 
 
 def past_trades(timestamp=0, symbol='btcusd'):  # view your past trades
-
     payload = {
-
         "request": "/v1/mytrades",
         "nonce": gen_nonce(),
         "symbol": symbol,
         "timestamp": timestamp
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -293,7 +275,6 @@ def past_trades(timestamp=0, symbol='btcusd'):  # view your past trades
 
 def place_offer(currency, amount, rate, period, direction):
     payload = {
-
         "request": "/v1/offer/new",
         "nonce": gen_nonce(),
         "currency": currency,
@@ -301,7 +282,6 @@ def place_offer(currency, amount, rate, period, direction):
         "rate": rate,
         "period": period,
         "direction": direction
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -313,11 +293,9 @@ def place_offer(currency, amount, rate, period, direction):
 
 def cancel_offer(offer_id):
     payload = {
-
         "request": "/v1/offer/cancel",
         "nonce": gen_nonce(),
         "offer_id": offer_id
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -330,11 +308,9 @@ def cancel_offer(offer_id):
 
 def status_offer(offer_id):
     payload = {
-
         "request": "/v1/offer/status",
         "nonce": gen_nonce(),
         "offer_id": offer_id
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -347,10 +323,8 @@ def status_offer(offer_id):
 
 def active_offers():
     payload = {
-
         "request": "/v1/offers",
         "nonce": gen_nonce()
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -361,12 +335,9 @@ def active_offers():
 
 
 def balances():  # see your balances.
-
     payload = {
-
         "request": "/v1/balances",
         "nonce": gen_nonce()
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -378,14 +349,12 @@ def balances():  # see your balances.
 
 def withdraw(withdraw_type, walletselected, amount, address):
     payload = {
-
         "request": "/v1/withdraw",
         "nonce": gen_nonce(),
         "withdraw_type": withdraw_type,
         "walletselected": walletselected,
         "amount": amount,
         "address": address
-
     }
 
     signed_payload = _payload_packer(payload)
@@ -395,9 +364,23 @@ def withdraw(withdraw_type, walletselected, amount, address):
     return rep
 
 
+def account_fees():
+    payload = {
+        "request": "/v1/account_fees",
+        "nonce": gen_nonce()
+    }
+
+    signed_payload = _payload_packer(payload)
+    r = requests.post(URL + "/account_fees", headers=signed_payload,
+                      verify=True)
+    rep = r.json()
+
+    return rep
+
+
 def _payload_packer(payload):  # packs and signs the payload of the request.
 
-    j = json.dumps(payload)
+    j = bytes(json.dumps(payload), 'utf-8')
     data = base64.standard_b64encode(j)
 
     h = hmac.new(API_SECRET, data, hashlib.sha384)
