@@ -40,7 +40,7 @@ def ticker(symbol='btcusd'):
     try:
         rep['last_price']
     except KeyError:
-        return rep['message']
+        return rep
 
     return rep
 
@@ -61,7 +61,7 @@ def today(symbol='btcusd'):  # today's low, high and volume.
     try:
         rep['volume']
     except KeyError:
-        return rep['message']
+        return rep
 
     return rep
 
@@ -142,7 +142,7 @@ def place_order(amount, price, side, ord_type, symbol='btcusd',
     try:
         rep['order_id']
     except:
-        return rep['message']
+        return rep
 
     return rep
 
@@ -162,7 +162,7 @@ def delete_order(order_id):  # cancel an order.
     try:
         rep['avg_execution_price']
     except:
-        return rep['message']
+        return rep
 
     return rep
 
@@ -197,7 +197,7 @@ def status_order(order_id):
     try:
         rep['avg_execution_price']
     except:
-        return rep['message']
+        return rep
 
     return rep
 
