@@ -153,9 +153,7 @@ class PublicV2:
         res = self._get('v2/ticker/{}'.format(symbol))
         return res.json()
 
-    def tickers(self, symbols=None):
-        if symbols is None:
-            return None
+    def tickers(self, symbols=list('tBTCUSD')):
         res = self._get('v2/tickers?symbols={}'.format(','.join(symbols)))
         return res.json()
 
