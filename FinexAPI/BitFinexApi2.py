@@ -557,7 +557,8 @@ class TradingV1:
 
     def order_status(self, order_id):
         """
-        Get the status of an order. Is it active? Was it cancelled? To what extent has it been executed? etc.
+        Get the status of an order. Is it active? Was it cancelled?
+        To what extent has it been executed? etc.
 
         Parameters
         ----------
